@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - "SPTI_Full_Package.zip"
+      - "SPTI_Full_Package_Fixed.zip"
       - ".github/workflows/build.yml"
 
 permissions:
@@ -21,7 +21,7 @@ jobs:
       - name: Unpack project
         run: |
           mkdir -p extracted
-          unzip -q SPTI_Full_Package.zip -d extracted
+          unzip -q SPTI_Full_Package_Fixed.zip -d extracted
           test -f extracted/STPI_Control_App/settings.gradle
           test -f extracted/STPI_Control_App/app/build.gradle
 
