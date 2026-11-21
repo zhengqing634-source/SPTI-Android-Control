@@ -1,0 +1,48 @@
+name: Build SPTI Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "SPTI_Full_Package.zip"
+      - ".github/workflows/build.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Unpack project
+        run: |
+          mkdir -p extracted
+          unzip -q SPTI_Full_Package.zip -d extracted
+          test -f extracted/STPI_Control_App/settings.gradle
+          test -f extracted/STPI_Control_App/app/build.gradle
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Build debug APK
+        run: gradle -p extracted/STPI_Control_App :app:assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: SPTI-debug-APK
+          path: extracted/STPI_Control_App/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 7
