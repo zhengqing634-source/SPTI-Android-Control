@@ -1,11 +1,12 @@
-name: Build SPTI Android APK
+
+name: Build SPTI Formal 2.1.0
 
 on:
   workflow_dispatch:
   push:
     paths:
-      - "SPTI_Full_Package_Fixed.zip"
-      - ".github/workflows/build.yml"
+      - 'SPTI_Formal_2.1.0_Source.zip'
+      - '.github/workflows/build.yml'
 
 permissions:
   contents: read
@@ -13,36 +14,33 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Unpack project
+      - name: Extract source
         run: |
-          mkdir -p extracted
-          unzip -q SPTI_Full_Package_Fixed.zip -d extracted
-          test -f extracted/STPI_Control_App/settings.gradle
-          test -f extracted/STPI_Control_App/app/build.gradle
+          mkdir -p source
+          unzip -q SPTI_Formal_2.1.0_Source.zip -d source
+          test -f source/STPI_Control_App/settings.gradle
 
-      - name: Set up JDK 17
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: '17'
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: "8.9"
+          gradle-version: '8.9'
 
-      - name: Build debug APK
-        run: gradle -p extracted/STPI_Control_App :app:assembleDebug
+      - name: Build APK
+        run: gradle -p source/STPI_Control_App :app:assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: SPTI-debug-APK
-          path: extracted/STPI_Control_App/app/build/outputs/apk/debug/app-debug.apk
+          name: SPTI-Formal-2.1.0-APK
+          path: source/STPI_Control_App/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 7
