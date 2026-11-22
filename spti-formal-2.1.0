@@ -1,0 +1,48 @@
+
+name: Build SPTI Formal APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'SPTI_Formal_2.1.0_Source.zip'
+      - '.github/workflows/build-formal.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Unpack formal source
+        run: |
+          mkdir -p spti-source
+          unzip -q SPTI_Formal_2.1.0_Source.zip -d spti-source
+          test -f spti-source/STPI_Control_App/settings.gradle
+          test -f spti-source/STPI_Control_App/app/src/main/AndroidManifest.xml
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build formal APK
+        run: gradle -p spti-source/STPI_Control_App :app:assembleDebug
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SPTI-Formal-2.1.0-APK
+          path: spti-source/STPI_Control_App/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 7
