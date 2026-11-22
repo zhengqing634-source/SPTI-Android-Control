@@ -1,11 +1,11 @@
 
-name: Build SPTI Formal 2.1.0
+name: Build SPTI Formal 2.1.1 Root
 
 on:
   workflow_dispatch:
   push:
     paths:
-      - 'SPTI_Formal_2.1.0_Source.zip'
+      - 'SPTI_Formal_2.1.1_Root_Source.zip'
       - '.github/workflows/build.yml'
 
 permissions:
@@ -17,19 +17,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Extract source
+      - name: Extract Root source
         run: |
           mkdir -p source
-          unzip -q SPTI_Formal_2.1.0_Source.zip -d source
+          unzip -q SPTI_Formal_2.1.1_Root_Source.zip -d source
           test -f source/STPI_Control_App/settings.gradle
+          test -f source/STPI_Control_App/app/src/main/java/com/stpi/control/MainActivity.java
 
-      - name: Set up JDK
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Gradle
+      - name: Set up Gradle 8.9
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
@@ -40,7 +41,7 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: SPTI-Formal-2.1.0-APK
+          name: SPTI-Formal-2.1.1-Root-APK
           path: source/STPI_Control_App/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 7
